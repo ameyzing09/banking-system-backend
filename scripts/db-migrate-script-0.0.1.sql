@@ -1,3 +1,4 @@
+CREATE DATABASE `banking-system`;
 USE `banking-system`;
 DROP TABLE IF EXISTS `banking-system`.`user`;
 CREATE TABLE `banking-system`.`user` (

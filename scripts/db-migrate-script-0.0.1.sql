@@ -1,5 +1,6 @@
 USE `banking-system`;
-DROP TABLE IF EXISTS CREATE TABLE `banking-system`.`user` (
+DROP TABLE IF EXISTS `banking-system`.`user`;
+CREATE TABLE `banking-system`.`user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
@@ -8,7 +9,8 @@ DROP TABLE IF EXISTS CREATE TABLE `banking-system`.`user` (
 INSERT INTO `banking-system`.`user` (`id`, `username`, `password`) VALUES (1, 'admin', 'admin');
 
 
-DROP TABLE IF EXISTS CREATE TABLE `banking-system`.`account_info` (
+DROP TABLE IF EXISTS `banking-system`.`account_info`;
+CREATE TABLE `banking-system`.`account_info` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `account_no` VARCHAR(45) NOT NULL,
   `a_holder_name` VARCHAR(45) NOT NULL,
@@ -22,7 +24,8 @@ DROP TABLE IF EXISTS CREATE TABLE `banking-system`.`account_info` (
   PRIMARY KEY (`id`));
 
 
-DROP TABLE IF EXISTS CREATE TABLE `banking-system`.`transaction` (
+DROP TABLE IF EXISTS `banking-system`.`transaction`;
+CREATE TABLE `banking-system`.`transaction` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `account_id` INT NOT NULL,
   `transaction_type` ENUM("DEBIT", "CREDIT") NOT NULL,

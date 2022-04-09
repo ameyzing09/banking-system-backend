@@ -10,9 +10,14 @@ const PORT = process.env.PORT || 8080
 app.use(express.json())
 
 // Login API
-app.post('/login', async (request, response) => {
+app.post('/login', (request, response) => {
     checkLoginCredentials(request, response)
 })
+
+app.get('/logout', async (req, res) => {
+    res.send("Log Out")
+})
+
 
 app.listen(PORT, () => console.log("Server started on port ", PORT))
 

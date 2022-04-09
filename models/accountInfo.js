@@ -1,6 +1,5 @@
 const db = require('../dbConfig')
 const sequelize = require('sequelize')
-const { ENUM } = require('sequelize')
 
 const AccountInfo = db.define('account_info', {
     id: {
@@ -13,6 +12,7 @@ const AccountInfo = db.define('account_info', {
     account_no: {
         type: sequelize.STRING,
         allowNull: false,
+        unique: true
     },
 
     a_holder_name: {
@@ -23,7 +23,7 @@ const AccountInfo = db.define('account_info', {
         type: sequelize.TEXT,
         allowNull: false,
     },
-    a_phone_number:{
+    a_phone_no:{
         type:sequelize.STRING,
         allowNull:false,
     },
@@ -42,7 +42,7 @@ const AccountInfo = db.define('account_info', {
     a_balance:{
         type:sequelize.FLOAT,
         allowNull:true,
-        defaultValue:0,
+        defaultValue: 0,
     },
     a_date_opened:{
         type:sequelize.DATE,

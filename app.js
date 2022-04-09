@@ -4,6 +4,7 @@ const app = express()
 
 const dbc = require('./database')
 const checkLoginCredentials = require('./services/checkLoginCredentials')
+const createBankAccount = require('./services/createBankAccount')
 
 const PORT = process.env.PORT || 8080
 
@@ -16,6 +17,10 @@ app.post('/login', (request, response) => {
 
 app.get('/logout', async (req, res) => {
     res.send("Log Out")
+})
+
+app.post('/accountRegistration', (req, res) => {
+    createBankAccount(req, res);
 })
 
 

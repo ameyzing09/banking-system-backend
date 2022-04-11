@@ -1,4 +1,5 @@
 require('dotenv').config()
+const cors = require('cors')
 const express = require('express')
 const app = express()
 
@@ -9,6 +10,7 @@ const createBankAccount = require('./services/createBankAccount')
 const PORT = process.env.PORT || 8080
 
 app.use(express.json())
+app.use(cors())
 
 // Login API
 app.post('/login', (request, response) => {
@@ -18,6 +20,7 @@ app.post('/login', (request, response) => {
 app.get('/logout', async (req, res) => {
     res.send("Log Out")
 })
+
 
 app.post('/accountRegistration', (req, res) => {
     createBankAccount(req, res);

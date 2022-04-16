@@ -17,13 +17,14 @@ app.post('/login', (request, response) => {
     checkLoginCredentials(request, response)
 })
 
+// Logout API
 app.get('/logout', async (req, res) => {
     res.send("Log Out")
 })
 
-
+// Account Opening API
 app.post('/accountOpening', (req, res) => {
-    createBankAccount(req, res);
+    createBankAccount(req, res)
 })
 
 

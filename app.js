@@ -22,7 +22,7 @@ app.get('/logout', async (req, res) => {
 })
 
 
-app.post('/accountRegistration', (req, res) => {
+app.post('/accountOpening', (req, res) => {
     createBankAccount(req, res);
 })
 

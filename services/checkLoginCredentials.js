@@ -1,8 +1,9 @@
 const user = require('../models/user')
 const { LOGIN_SUCCESS } = require('../constants/success')
-const { LOGIN_FAILED } = require('../constants/error')
+const { LOGIN_FAILED, SERVER_UNAVAILABLE } = require('../constants/error')
 
 const checkLoginCredentials = async (request, response) => {
+    let userLoggedIn = false;
     try{
         const userLoginCredentials = await user.findOne({
             where: {
@@ -10,17 +11,14 @@ const checkLoginCredentials = async (request, response) => {
             },
             raw: true
         })
-        if(request.body.username 
-            && request.body.password 
-            && request.body.username === userLoginCredentials.username 
-            && request.body.password === userLoginCredentials.password) {
-                response.status(200).json(LOGIN_SUCCESS)
-        }
-        else {
-            response.status(400).json(LOGIN_FAILED)
+        if(request.body.password 
+            && request.body.password === userLoginCredentials?.password) {
+                response.status(200).json({...LOGIN_SUCCESS, userLoggedIn: true})
+        } else {
+            response.status(401).json({...LOGIN_FAILED, userLoggedIn})
         }
     } catch(err) {
-        response.status(400).json(LOGIN_FAILED)
+        response.status(404).json({...SERVER_UNAVAILABLE, userLoggedIn })
     }
 }
 

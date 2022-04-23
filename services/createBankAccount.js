@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     try {
         if (req.body) {
             let accountHolderDob = moment(req.body.accountHolderDob, 'DD-MM-YYYY').utc()
-            if (+accountHolderPhone.length === 10 && moment(req.body.accountHolderDob, 'DD-MM-YYYY').isValid()) {
+            if (+accountHolderPhone?.length === 10 && moment(req.body.accountHolderDob, 'DD-MM-YYYY').isValid()) {
                 const accountNumber = getAccountNumber()
                 console.info('accountNumber', accountNumber)
                 await accountInfoModel.create({

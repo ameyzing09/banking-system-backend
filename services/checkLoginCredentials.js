@@ -13,6 +13,7 @@ const checkLoginCredentials = async (request, response) => {
         })
         if(request.body.password 
             && request.body.password === userLoginCredentials?.password) {
+                console.info('User logged in successfully creds fetched form DB are: ', userLoginCredentials)
                 response.status(200).json({...LOGIN_SUCCESS, userLoggedIn: true})
         } else {
             response.status(401).json({...LOGIN_FAILED, userLoggedIn})

@@ -8,5 +8,9 @@ module.exports = {
     ACCOUNT_CREATION_SUCCESS: {
         code: SUCCESS,
         message: 'Account creation successful'
-    }
+    },
+    VIEW_TRANSACTION_SUCCESS: {
+        code: SUCCESS,
+        message: 'View transaction successful'
+    },
 }

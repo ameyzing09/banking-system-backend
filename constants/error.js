@@ -16,5 +16,9 @@ module.exports = {
     ACCOUNT_CREATION_FAILED: {
         code: INTERNAL_SERVER_ERROR,
         message: 'Account creation failed'
-    }
+    },
+    NO_ACCOUNT_FOUND: {
+        code: NOT_FOUND,
+        message: 'No account found'
+    },
 }

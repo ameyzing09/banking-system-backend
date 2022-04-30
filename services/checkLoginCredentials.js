@@ -1,11 +1,11 @@
-const user = require('../models/user')
+const userModel = require('../models/user')
 const { LOGIN_SUCCESS } = require('../constants/success')
 const { LOGIN_FAILED, SERVER_UNAVAILABLE } = require('../constants/error')
 
 const checkLoginCredentials = async (request, response) => {
     let userLoggedIn = false;
     try{
-        const userLoginCredentials = await user.findOne({
+        const userLoginCredentials = await userModel.findOne({
             where: {
                 username: request.body.username,
             },

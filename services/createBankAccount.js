@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
                     a_type: accountHolderType,
                     a_balance: (accountHolderBalance && accountHolderBalance > 0) ? accountHolderBalance : 0
                 })
-                res.status(200).json({...ACCOUNT_CREATION_SUCCESS, accountNumber})
+                res.status(200).json({...ACCOUNT_CREATION_SUCCESS, data: {accountNumber}})
             } else {
                 res.status(400).json(INVALID_DATA)
             }

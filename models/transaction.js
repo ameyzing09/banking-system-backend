@@ -35,7 +35,12 @@ const Transaction = db.define(
       type: sequelize.FLOAT,
       allowNull: false,
     },
-    
+
+    available_balance: {
+      type: sequelize.FLOAT,
+      allowNull: false,
+    },
+
     transaction_date: {
       type: sequelize.DATE,
       allowNull: false,

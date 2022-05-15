@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 
 const dbc = require("./database");
+const cashDeposit = require("./services/cashDeposit");
 const checkLoginCredentials = require("./services/checkLoginCredentials");
 const createBankAccount = require("./services/createBankAccount");
 const getTransactionDetails = require("./services/getTransactionDetails");
@@ -35,7 +36,7 @@ app.post("/viewTransaction", (req, res) => {
 
 //Cash Deposit API
 app.post("/cashDeposit", (req, res) => {
-  res.send("Cash Deposit");
+  cashDeposit(req, res)
 });
 
 app.listen(PORT, () => console.log("Server started on port ", PORT));

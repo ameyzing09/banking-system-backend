@@ -21,3 +21,6 @@ INSERT INTO `banking-system`.`transaction_heading` (`id`, `key`, `value`) VALUES
 
 ALTER TABLE `banking-system`.`transaction` 
 DROP COLUMN `balance`;
+
+ALTER TABLE `banking-system`.`transaction` 
+ADD COLUMN `available_balance` FLOAT NOT NULL AFTER `transaction_amount`;

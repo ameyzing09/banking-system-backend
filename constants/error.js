@@ -21,4 +21,8 @@ module.exports = {
         code: NOT_FOUND,
         message: 'No account found'
     },
+    ERROR_CREATING_TRANSACTION_REPORT: {
+        code: INTERNAL_SERVER_ERROR,
+        message: 'Error creating transaction report'
+    },
 }

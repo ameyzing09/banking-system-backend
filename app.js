@@ -4,10 +4,14 @@ const express = require("express");
 const app = express();
 
 const dbc = require("./database");
-const cashDeposit = require("./services/cashDeposit");
 const checkLoginCredentials = require("./services/checkLoginCredentials");
-const createBankAccount = require("./services/createBankAccount");
-const getTransactionDetails = require("./services/getTransactionDetails");
+const {
+  createBankAccount,
+  getTransactionDetails,
+  getAccountDetails,
+  cashDeposit,
+  cashWithdrawal,
+} = require("./services/accountServices");
 
 const PORT = process.env.PORT || 8080;
 
@@ -29,6 +33,11 @@ app.post("/accountOpening", (req, res) => {
   createBankAccount(req, res);
 });
 
+//Get Account Details API
+app.post("/getAccountInfo", (req, res) => {
+  getAccountDetails(req, res);
+});
+
 //View Transaction API
 app.post("/viewTransaction", (req, res) => {
   getTransactionDetails(req, res);
@@ -36,7 +45,12 @@ app.post("/viewTransaction", (req, res) => {
 
 //Cash Deposit API
 app.post("/cashDeposit", (req, res) => {
-  cashDeposit(req, res)
+  cashDeposit(req, res);
+});
+
+//Cash Withdraw API
+app.post("/cashWithdrawal", (req, res) => {
+  cashWithdrawal(req, res);
 });
 
 app.listen(PORT, () => console.log("Server started on port ", PORT));

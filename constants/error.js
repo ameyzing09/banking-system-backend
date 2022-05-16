@@ -1,4 +1,4 @@
-const { INTERNAL_SERVER_ERROR, UNAUTHORIZED, NOT_FOUND } = require('./httpStatusCodes');
+const { INTERNAL_SERVER_ERROR, UNAUTHORIZED, NOT_FOUND, BAD_REQUEST } = require('./httpStatusCodes');
 
 module.exports = {
     LOGIN_FAILED: {
@@ -21,4 +21,12 @@ module.exports = {
         code: NOT_FOUND,
         message: 'No account found'
     },
+    ERROR_CREATING_TRANSACTION_REPORT: {
+        code: INTERNAL_SERVER_ERROR,
+        message: 'Error creating transaction report'
+    },
+    INSUFFICIENT_BALANCE: {
+        code: BAD_REQUEST,
+        message: 'Insufficient balance'
+    }
 }

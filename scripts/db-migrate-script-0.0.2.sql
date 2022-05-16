@@ -24,3 +24,19 @@ DROP COLUMN `balance`;
 
 ALTER TABLE `banking-system`.`transaction` 
 ADD COLUMN `available_balance` FLOAT NOT NULL AFTER `transaction_amount`;
+
+CREATE TABLE `banking-system`.`account_info_heading` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `key` VARCHAR(100) NOT NULL,
+  `value` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`));
+
+INSERT INTO `banking-system`.`account_info_heading` (`id`, `key`, `value`) VALUES ('1', 'account_holder_name', 'Account Holder Name');
+INSERT INTO `banking-system`.`account_info_heading` (`key`, `value`) VALUES ('account_no', 'Account Number');
+INSERT INTO `banking-system`.`account_info_heading` (`key`, `value`) VALUES ('a_holder_address', 'Account Address');
+INSERT INTO `banking-system`.`account_info_heading` (`key`, `value`) VALUES ('a_phone_no', 'Contact');
+INSERT INTO `banking-system`.`account_info_heading` (`key`, `value`) VALUES ('a_gender', 'Gender');
+INSERT INTO `banking-system`.`account_info_heading` (`key`, `value`) VALUES ('a_type', 'Account Type');
+INSERT INTO `banking-system`.`account_info_heading` (`key`, `value`) VALUES ('a_balance', 'Available Balance');
+
+UPDATE `banking-system`.`account_info_heading` SET `key` = 'a_holder_name' WHERE (`id` = '1');

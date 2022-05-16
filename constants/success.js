@@ -16,5 +16,9 @@ module.exports = {
     CASH_DEPOSIT_SUCCESS: {
         code: SUCCESS,
         message: 'Cash deposit successful'
+    },
+    CASH_WITHDRAW_SUCCESS: {
+        code: SUCCESS,
+        message: 'Cash withdraw successful'
     }
 }

@@ -1,19 +1,25 @@
 const moment = require("moment");
 
 const accountInfoModel = require("../models/accountInfo");
+const accountInfoHeaderModel = require("../models/accountInfoHeading");
 const transactionModel = require("../models/transaction");
-const transactionHeader = require("../models/transactionHeader");
+const transactionHeaderModel = require("../models/transactionHeader");
 
 const getAccountNumber = require("../utils/getAccountNumber");
 
-const { ACCOUNT_CREATION_FAILED, INVALID_DATA } = require("../constants/error");
+const {
+  ACCOUNT_CREATION_FAILED,
+  INVALID_DATA,
+  INSUFFICIENT_BALANCE,
+  NO_ACCOUNT_FOUND,
+} = require("../constants/error");
 const {
   VIEW_TRANSACTION_SUCCESS,
   ACCOUNT_CREATION_SUCCESS,
   CASH_DEPOSIT_SUCCESS,
   CASH_WITHDRAW_SUCCESS,
 } = require("../constants/success");
-const { NO_ACCOUNT_FOUND } = require("../constants/error");
+
 const { TRANSACTION_TYPE } = require("../constants/transactionConstants");
 
 const {
@@ -26,6 +32,7 @@ const {
 const checkAccountBalance = require("./checkAccountBalance");
 
 const Sequelize = require("../dbConfig");
+const { Op } = require("sequelize");
 
 const createBankAccount = async (req, res) => {
   const {
@@ -75,8 +82,9 @@ const createBankAccount = async (req, res) => {
 };
 
 const getTransactionHeader = async () => {
-  return await transactionHeader.findAll({ raw: true });
+  return await transactionHeaderModel.findAll({ raw: true });
 };
+
 const getTransactionDetails = async (req, res) => {
   try {
     let transactionHeading = await getTransactionHeader();
@@ -102,7 +110,7 @@ const getTransactionDetails = async (req, res) => {
         "transaction_description",
         "transaction_type",
         "transaction_amount",
-        [Sequelize.col("account_info.a_balance"), "a_balance"],
+        "available_balance",
       ],
       raw: true,
       nest: true,
@@ -141,7 +149,7 @@ const cashDeposit = async (req, res) => {
     transaction = await Sequelize.transaction();
     const { id: accountId, a_balance: accountBalance } =
       await checkAccountBalance(accountNumber);
-    if (accountBalance && accountId) {
+    if (accountBalance >= 0 && accountId) {
       const accountBalanceUpdated = await accountInfoModel.update(
         {
           a_balance: accountBalance + amount,
@@ -190,6 +198,22 @@ const cashDeposit = async (req, res) => {
   }
 };
 
+const getAccountInfoHeader = async (req, res) => {
+  try {
+    const accountInfoHeader = await accountInfoHeaderModel.findAll({
+      attributes: ["key", "value"],
+      raw: true,
+    });
+    res.status(SUCCESS).json({ error: null, data: [...accountInfoHeader] });
+  } catch (error) {
+    console.error("Error in getting account info header", error);
+    res.status(INTERNAL_SERVER_ERROR).json({
+      error,
+      data: null,
+    });
+  }
+};
+
 const cashWithdrawal = async (req, res) => {
   let transaction;
   CASH_WITHDRAW_SUCCESS;
@@ -198,28 +222,43 @@ const cashWithdrawal = async (req, res) => {
     transaction = await Sequelize.transaction();
     const { id: accountId, a_balance: accountBalance } =
       await checkAccountBalance(accountNumber);
+    console.log("accountBalance", accountBalance);
+    console.log("amount", amount);
+    const accountBalanceToUpdate = accountBalance - amount
     if (accountBalance && accountId && accountBalance >= amount) {
+      const payload = {
+        a_balance: accountBalanceToUpdate,
+      };
+      console.log("Payload to update", payload);
+
+      const option = {
+        id: accountId,
+        account_no: accountNumber,
+      };
+
+      console.log("option", option);
       const accountBalanceUpdated = await accountInfoModel.update(
         {
-          a_balance: accountBalance - amount,
+          a_balance: accountBalanceToUpdate,
         },
         {
           where: {
-            account_no: accountNumber,
+            [Op.and]: [{ id: accountId }, { account_no: accountNumber }],
           },
+          returning: true,
+          plain: true,
           transaction,
         }
       );
 
       console.info("accountBalanceUpdated ", accountBalanceUpdated);
-      if (accountBalanceUpdated) {
         await transactionModel.create(
           {
             account_id: accountId,
             transaction_description: "Cash Withdrawal",
             transaction_type: TRANSACTION_TYPE.DEBIT,
             transaction_amount: amount,
-            available_balance: accountBalance - amount,
+            available_balance: accountBalanceToUpdate,
             transaction_date: new Date(),
           },
           { transaction }
@@ -229,18 +268,23 @@ const cashWithdrawal = async (req, res) => {
           error: null,
           data: {
             ...CASH_WITHDRAW_SUCCESS,
-            accountBalance: accountBalance - amount,
+            accountBalance: accountBalanceToUpdate,
           },
         });
         await transaction.commit();
-      } else {
-        throw new Error(NO_ACCOUNT_FOUND);
-      }
+    } else {
+      console.log("Insufficient balance", INSUFFICIENT_BALANCE);
+      throw Error(INSUFFICIENT_BALANCE.message, {
+        cause: { status: INSUFFICIENT_BALANCE.code },
+      });
     }
   } catch (error) {
-    console.error(`Error fetching balance for ${accountNumber}`);
-    res.status(INTERNAL_SERVER_ERROR).json({
-      error,
+    console.error("Error ", error);
+    res.status(error.cause.status).json({
+      error: {
+        code: error.cause.status,
+        message: error.message,
+      },
       data: null,
     });
     await transaction.rollback();
@@ -255,7 +299,13 @@ const getAccountDetails = async (req, res) => {
       where: {
         account_no: accountNumber,
       },
-      include: ["id"],
+      attributes: [
+        "a_holder_name",
+        "a_holder_address",
+        "account_no",
+        "a_type",
+        "a_balance",
+      ],
       raw: true,
     });
     if (accountDetails) {
@@ -266,12 +316,18 @@ const getAccountDetails = async (req, res) => {
         },
       });
     } else {
-      throw new Error(NO_ACCOUNT_FOUND);
+      throw Error(NO_ACCOUNT_FOUND.message, {
+        cause: { status: NO_ACCOUNT_FOUND.code },
+      });
     }
   } catch (error) {
-    console.error("Error in fetching account details", error);
-    res.status(NOT_FOUND).json({
-      error: NO_ACCOUNT_FOUND,
+    // console.error("Error in fetching account details", error);
+    console.error("Error ", error);
+    res.status(error.cause.status).json({
+      error: {
+        code: error.cause.status,
+        message: error.message,
+      },
       data: null,
     });
   }
@@ -282,5 +338,6 @@ module.exports = {
   getTransactionDetails,
   cashDeposit,
   cashWithdrawal,
+  getAccountInfoHeader,
   getAccountDetails,
 };

@@ -11,6 +11,7 @@ const {
   getAccountDetails,
   cashDeposit,
   cashWithdrawal,
+  getAccountInfoHeader,
 } = require("./services/accountServices");
 
 const PORT = process.env.PORT || 8080;
@@ -49,8 +50,13 @@ app.post("/cashDeposit", (req, res) => {
 });
 
 //Cash Withdraw API
-app.post("/cashWithdrawal", (req, res) => {
+app.post("/cashWithdrawal", async (req, res) => {
   cashWithdrawal(req, res);
 });
+
+// Get Header API
+app.get('/getHeaders', async (req, res) => {
+  await getAccountInfoHeader(req, res);
+})
 
 app.listen(PORT, () => console.log("Server started on port ", PORT));

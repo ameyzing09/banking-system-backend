@@ -28,5 +28,13 @@ module.exports = {
     INSUFFICIENT_BALANCE: {
         code: BAD_REQUEST,
         message: 'Insufficient balance'
+    },
+    ACCOUNT_DELETION_FAILED:{
+        code: INTERNAL_SERVER_ERROR,
+        message: 'Account deletion failed'
+    },
+    ACCOUNT_BALANCE_NOT_ZERO:{
+        code: BAD_REQUEST,
+        message: 'Account balance should be zero to delete'
     }
 }

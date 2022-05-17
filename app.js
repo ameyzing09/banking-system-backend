@@ -12,6 +12,7 @@ const {
   cashDeposit,
   cashWithdrawal,
   getAccountInfoHeader,
+  deleteAccount,
 } = require("./services/accountServices");
 
 const PORT = process.env.PORT || 8080;
@@ -53,6 +54,11 @@ app.post("/cashDeposit", (req, res) => {
 app.post("/cashWithdrawal", async (req, res) => {
   cashWithdrawal(req, res);
 });
+
+//Delete Account API
+app.post("/deleteAccount", async (req, res) => {
+  deleteAccount(req, res);
+})
 
 // Get Header API
 app.get('/getHeaders', async (req, res) => {

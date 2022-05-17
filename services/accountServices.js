@@ -12,12 +12,14 @@ const {
   INVALID_DATA,
   INSUFFICIENT_BALANCE,
   NO_ACCOUNT_FOUND,
+  ACCOUNT_BALANCE_NOT_ZERO,
 } = require("../constants/error");
 const {
   VIEW_TRANSACTION_SUCCESS,
   ACCOUNT_CREATION_SUCCESS,
   CASH_DEPOSIT_SUCCESS,
   CASH_WITHDRAW_SUCCESS,
+  ACCOUNT_DELETED_SUCCESSFULLY,
 } = require("../constants/success");
 
 const { TRANSACTION_TYPE } = require("../constants/transactionConstants");
@@ -224,7 +226,7 @@ const cashWithdrawal = async (req, res) => {
       await checkAccountBalance(accountNumber);
     console.log("accountBalance", accountBalance);
     console.log("amount", amount);
-    const accountBalanceToUpdate = accountBalance - amount
+    const accountBalanceToUpdate = accountBalance - amount;
     if (accountBalance && accountId && accountBalance >= amount) {
       const payload = {
         a_balance: accountBalanceToUpdate,
@@ -252,26 +254,26 @@ const cashWithdrawal = async (req, res) => {
       );
 
       console.info("accountBalanceUpdated ", accountBalanceUpdated);
-        await transactionModel.create(
-          {
-            account_id: accountId,
-            transaction_description: "Cash Withdrawal",
-            transaction_type: TRANSACTION_TYPE.DEBIT,
-            transaction_amount: amount,
-            available_balance: accountBalanceToUpdate,
-            transaction_date: new Date(),
-          },
-          { transaction }
-        );
+      await transactionModel.create(
+        {
+          account_id: accountId,
+          transaction_description: "Cash Withdrawal",
+          transaction_type: TRANSACTION_TYPE.DEBIT,
+          transaction_amount: amount,
+          available_balance: accountBalanceToUpdate,
+          transaction_date: new Date(),
+        },
+        { transaction }
+      );
 
-        res.status(SUCCESS).json({
-          error: null,
-          data: {
-            ...CASH_WITHDRAW_SUCCESS,
-            accountBalance: accountBalanceToUpdate,
-          },
-        });
-        await transaction.commit();
+      res.status(SUCCESS).json({
+        error: null,
+        data: {
+          ...CASH_WITHDRAW_SUCCESS,
+          accountBalance: accountBalanceToUpdate,
+        },
+      });
+      await transaction.commit();
     } else {
       console.log("Insufficient balance", INSUFFICIENT_BALANCE);
       throw Error(INSUFFICIENT_BALANCE.message, {
@@ -288,6 +290,51 @@ const cashWithdrawal = async (req, res) => {
       data: null,
     });
     await transaction.rollback();
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  // let transaction;
+  try {
+    // transaction = await Sequelize.transaction();
+    console.log("req.body", req.body);
+    const checkedAccountBalance = await checkAccountBalance(
+      req.body.accountNumber
+    );
+    // const id = checkedAccountBalance?.id;
+    const accountBalance = checkedAccountBalance?.a_balance;
+    console.log("accountBalance in accountServices : ", accountBalance);
+    if (accountBalance === undefined) {
+      console.log("In accountbalance null check()");
+      throw Error(NO_ACCOUNT_FOUND.message, {
+        cause: { status: NO_ACCOUNT_FOUND.code },
+      });
+    } else if (accountBalance === 0) {
+      console.log("In accountbalance 0 check()");
+      const deleteAccountResponse = await accountInfoModel.destroy({
+        where: {
+          account_no: req.body.accountNumber,
+        },
+        // transaction,
+      });
+      console.log("deleteAccountResponse", deleteAccountResponse);
+      res
+        .status(SUCCESS)
+        .json({ data: { ...ACCOUNT_DELETED_SUCCESSFULLY }, error: null });
+    } else {
+      throw Error(ACCOUNT_BALANCE_NOT_ZERO.message, {
+        cause: { status: ACCOUNT_BALANCE_NOT_ZERO.code },
+      });
+    }
+  } catch (error) {
+    console.error("Error ", error);
+    res.status(error.cause.status).json({
+      error: {
+        code: error.cause.status,
+        message: error.message,
+      },
+      data: null,
+    });
   }
 };
 
@@ -338,6 +385,7 @@ module.exports = {
   getTransactionDetails,
   cashDeposit,
   cashWithdrawal,
+  deleteAccount,
   getAccountInfoHeader,
   getAccountDetails,
 };

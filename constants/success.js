@@ -20,5 +20,9 @@ module.exports = {
     CASH_WITHDRAW_SUCCESS: {
         code: SUCCESS,
         message: 'Cash withdraw successful'
+    },
+    ACCOUNT_DELETED_SUCCESSFULLY: {
+        code: SUCCESS,
+        message: 'Account deleted successfully'
     }
 }

@@ -3,6 +3,7 @@ const accountInfo = require("../models/accountInfo");
 
 const checkAccountBalance = async (accountNumber) => {
   try {
+    console.log("in checkAccountBalance accountNumber ", accountNumber);
     const accountBalance = await accountInfo.findOne({
       where: {
         account_no: accountNumber,
@@ -10,14 +11,23 @@ const checkAccountBalance = async (accountNumber) => {
       attributes: ["id", "a_balance"],
       raw: true,
     });
-    if (accountBalance) {
+    console.log('accountBalance in checkAccountBalance(): ', accountBalance);
+    if (accountBalance.a_balance >= 0) {
       return accountBalance;
-    } else {
-      throw new Error(NO_ACCOUNT_FOUND);
     }
   } catch (error) {
-    console.error(`Error fetching balance for ${accountNumber}`);
-    throw { error, message: "Error fetching balance for account" };
+    console.error("Error in checkAccountBalance: ", error);
+    throw Error(NO_ACCOUNT_FOUND.message, {
+      cause: { status: NO_ACCOUNT_FOUND.code },
+    });
+    // res.status(error.cause.status).json({
+    //   error: {
+    //     code: error.cause.status,
+    //     message: error.message,
+    //   },
+    //   data: null,
+    // });
+    // throw Error(error);
   }
 };
 
